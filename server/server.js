@@ -1,34 +1,38 @@
-var mongoose = require('mongoose');
+var express = require('express');
+var bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+var app = express();
 
-var Todo = mongoose.model('Todos'/*(This name specifies the name of collection)*/,{
-    text:{
-        type: String,
-        required: true,
-        minlength: 1,
-        trim: true  ///removes any useless spaces
-    },
-    completed:{
-        type: Boolean,
-        default: false
-    },
-    completedAt:{
-        type: Number,
-        deault : null
-    }
-});
 
-var User = mongoose.model('Users',{
-   email:{
-       type : String,
-       required : true,
-       minlength: 1,
-       trim: true
-   }
-});
-var newTodo = new Todo({
+var mongoose = require('./db/mongoose');
+var Todo = require('./models/Todo').Todo;
+var User = require('./models/User').User;
+
+app.use(bodyParser.json());
+
+app.post('/todos',(req,res)=>{
+    var newTodo = new Todo({
+        text : req.body.text,
+        completed: req.body.completed
+    });
+    newTodo.save().then(()=>{res.send(newTodo)},(err)=>{res.status(400).send(err)});
+})
+
+
+
+
+
+
+
+
+
+
+
+
+app.listen(3000,()=>{
+    console.log("Server is up and running on port 3000");
+})
+/*var newTodo = new Todo({
     text:"Complete the course"
 });
 
@@ -46,4 +50,4 @@ var user1 = new User({
 
 //newTodo_1.save().then((doc)=>{console.log(doc)},(err)=>{console.log(err)});
 
-user1.save().then((doc)=>{console.log(doc)},(err)=>{console.log(err)});
+user1.save().then((doc)=>{console.log(doc)},(err)=>{console.log(err)});*/
