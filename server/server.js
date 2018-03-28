@@ -44,10 +44,31 @@ app.get('/todos/:id',(req,res)=>{
     })
 })
 
+
+app.delete('/todos/:id',(req,res)=>{
+    var id = req.params.id;
+if(!ObjectId.isValid(id))
+{
+    return res.status(404).send();
+}
+
+    Todo.findByIdAndRemove(id).then((result)=>{
+        if(!result)
+    {
+    res.status(404).send();
+    }
+    res.send(result);
+    }).catch((e)=>{
+        res.status(400).send();
+})
+
+
+
+})
+
 app.listen(3000,()=>{
     console.log("Server is up and running on port 3000");
 })
-
 module.exports={
     app
 }
