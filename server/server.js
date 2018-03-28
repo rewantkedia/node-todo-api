@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 const ObjectId = require('mongodb').ObjectID;
+const _ = require('lodash');
 
 var app = express();
 
@@ -65,6 +66,36 @@ if(!ObjectId.isValid(id))
 
 
 })
+
+app.patch('/todos/:id',(req,res)=>{
+    var id = req.params.id;
+    var body = _.pick(req.body,['text','completed']);
+    if(!ObjectId.isValid(id))
+    {
+        return res.status(404).send();
+    }
+    console.log(_.isBoolean(body.completed));
+    if(_.isBoolean(body.completed) && (body.completed == true))
+    {
+        body.completedAt = new Date().getTime();
+    }
+    else
+    {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+    if(!todo)
+{
+    return res.status(404).send();
+}
+res.send(body);
+    }).catch((e)=>{
+        res.status(404).send();
+})
+})
+
 
 app.listen(3000,()=>{
     console.log("Server is up and running on port 3000");
